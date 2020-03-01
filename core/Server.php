@@ -9,11 +9,11 @@ require_once 'Response.php';
  */
 Class Server{
 
-  protected $controller = 'Auth';
-  protected $method = '';
-  protected $params = [];
-  protected $controllersPath = "app/controllers/";
-  protected $extensionControllerFile = "Controller.php";
+  private $controller = 'Auth';
+  private $method = 'index';
+  private $params = [];
+  private $controllersPath = "app/controllers/";
+  private $extensionControllerFile = ".php";
   
   public function __construct(){
     
@@ -25,14 +25,14 @@ Class Server{
      * Aqui garantimos que o controller sera chamado com a 
      * primeira letra em maiuscula para prevenir erro no file_exists
      */
-    $url[0] = ucfirst($url[0]);
+    $this->controller = ucfirst($url[0]).'Controller';
+    $this->method = isset($url[1]) ? $url[1] : $this->method;
 
     //Monta o caminho completo do controller
-    $fullPathToController = $this->controllersPath . $url[0] . $this->extensionControllerFile;
-
+    $fullPathToController = $this->controllersPath . $this->controller . $this->extensionControllerFile;
+    
     //Verificamos se existe o controller na pasta
     if(file_exists($fullPathToController)){
-      $this->controller = $url[0].'Controller';
       unset($url[0]);
     } else {
       $response->notFound();
@@ -42,11 +42,8 @@ Class Server{
     $this->controller = new $this->controller;
 
     //Verificamos se o método existe na classe
-    if(isset($url[1]) && method_exists($this->controller, $url[1])){
-      $this->method = $url[1];
+    if(method_exists($this->controller, $this->method)){
       unset($url[1]);
-    } else {
-      $response->notFound();
     }
     
     /**
@@ -57,6 +54,13 @@ Class Server{
     
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
       $this->controller->setRequests($_POST);
+    }
+
+    /**
+     * se for uma rota privada tera que validar o token
+     */
+    if($this->controller->isPrivate){
+      $this->controller->validateToken(@$_SERVER['HTTP_TOKEN']);
     }
 
     call_user_func_array([$this->controller, $this->method], $this->params);

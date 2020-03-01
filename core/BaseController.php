@@ -12,9 +12,21 @@ Class BaseController{
   public $requests = [];
   public $response;
   public $validation;
+  public $isPrivate = true;
+  private $hash = 'fT5ghE';
 
   public function __construct(){
     $this->response = new Response();
+  }
+  
+  public function validateToken($token){
+    if(md5($this->hash) != $token){
+      $this->response->unauthorized();
+    }
+  }
+
+  public function getHash(){
+    return $this->hash;
   }
 
   /**
