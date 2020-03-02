@@ -53,7 +53,13 @@ Class Server{
     $this->params = $url ? array_values($url) : [];
     
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
-      $this->controller->setRequests($_POST);
+      // Read the input stream
+      $body = file_get_contents("php://input");
+      
+      // Decode the JSON object
+      $object = json_decode($body, true);
+      
+      $this->controller->setRequests($object);
     }
 
     /**

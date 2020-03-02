@@ -15,9 +15,17 @@ class Response {
     $response['status'] = $code;
     $response['response'] = $message;
     
-    http_response_code($code);
-    echo json_encode($response);
-    exit;
+    /**
+     * por algum motivo, no front end
+     * não esta conseguindo receber as messagens de erros
+     * quando o http response é diferente de 200
+     * então mandei o http code dentro de status no response
+     */
+    //http_response_code($code);
+    //header('Content-Type: application/json');
+    header('Status: ' .$code );
+    exit(json_encode($response));
+
   }
 
   public function success($message){
