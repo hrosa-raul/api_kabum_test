@@ -91,12 +91,6 @@ Class ClientsController extends BaseController {
   //exclui um cliente
   public function delete($id_client){
     $clients = new Clients();
-    
-    $client = $clients->findClient($id_client);
-         
-    if(!$client){
-      $this->response->notFound('Cliente não encontrado');
-    }
 
     $clients->delete($id_client);
 
