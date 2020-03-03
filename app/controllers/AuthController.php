@@ -10,8 +10,6 @@ Class AuthController extends BaseController {
     $this->isPrivate = false;
     parent::__construct();
   }
-
-  //POST -> /auth/login
   public function login(){
     //Apica as regras de validações
     $this->validation->validate('email')
