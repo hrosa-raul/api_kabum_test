@@ -13,13 +13,24 @@ Class ClientsController extends BaseController {
     $this->response->success($response);
   }
 
+  public function find($id_client){
+    $clients = new Clients();
+    $client = $clients->findClient($id_client);
+
+    if(!$client){
+      $this->response->notFound('Cliente não encontrado');
+    }else{
+      $this->response->success($client);
+    }
+  }
+
   //prepara os dados do cliente para uma inserção/alteração
   private function getClientData(){
     $clientData = [
       'name' => $this->requests['name'],
-      'date_of_birth' => $this->requests['date_of_birth'],
-      'cpf' => $this->requests['cpf'],
-      'rg' => $this->requests['rg'],
+      'birth_date' => trim($this->requests['birth_date']),
+      'cpf' => trim($this->requests['cpf']),
+      'rg' => trim($this->requests['rg']),
     ];
     
     if(isset($this->requests['phone'])){
@@ -31,7 +42,7 @@ Class ClientsController extends BaseController {
 
   public function insert(){
     $this->validation->validate('name')->required();
-    $this->validation->validate('date_of_birth')->required();
+    $this->validation->validate('birth_date')->required();
     $this->validation->validate('cpf')->required();
     $this->validation->validate('rg')->required();
 
@@ -53,7 +64,7 @@ Class ClientsController extends BaseController {
   //Altera um cliente
   public function update($id_client){
     $this->validation->validate('name')->required();
-    $this->validation->validate('date_of_birth')->required();
+    $this->validation->validate('birth_date')->required();
     $this->validation->validate('cpf')->required();
     $this->validation->validate('rg')->required();
 
